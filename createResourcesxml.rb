@@ -33,9 +33,9 @@ end # return_Environment
 # Returns a real aws name tag or reports an Empty Tag.
 def return_Name (tagName)
     if tagName[0] != nil
-       name = tagName[0].value 
+        return tagName[0].value 
      else
-       name = "Empty_Tag"
+       return "Empty_Tag"
      end
 end # return_Name
 # Writes Header to Rundeck resources.xml file
