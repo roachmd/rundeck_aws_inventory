@@ -50,7 +50,7 @@ def printRundeckFooter (aFile)
   aFile.close
 end
 # Verify basic env are set.
-def verifyEnv (zone,awsStacks)
+def verifyEnv (zone)
     if zone == nil
         puts "-- Please set AWS availability zone."
         puts %q[-- USEAGE: export ZONE="us-west-2"; ./buildrundeckResources.rb ]
@@ -89,7 +89,7 @@ end
 
 # = Main
 #
-verifyEnv(awsZone,awsStacks)
+verifyEnv(awsZone)
 aFile = File.new("#{rundeckResourceFile}", "w")
 ec2 = Aws::EC2::Resource.new(region: "#{awsZone}")
 if aFile
