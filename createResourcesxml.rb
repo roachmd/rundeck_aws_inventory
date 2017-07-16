@@ -11,46 +11,46 @@ require 'aws-sdk'
 #
 # = Environment Vars
 # 
-awsZone = ENV['ZONE'] || "us-east-2"
-awsStacks = ENV['STACK'] || "NONPROD"
-rundeckResourceFile = ENV['RUNDECKFILE'] || "../resources/resources.xml"
+aws_zone = ENV['ZONE'] || "us-east-2"
+aws_stacks = ENV['STACK'] || "NONPROD"
+rundeck_resource_file = ENV['RUNDECKFILE'] || "../resources/resources.xml"
 
 # = Global Variables
-totalProcessed = 0
-totalWritten = 0
+total_processed = 0
+total_written = 0
 
 # = Methods
 
 # Return a real aws environment tag or reports an Empty Tag.
-def return_Environment (tagEnvironment)
+def return_environment (tag_environment)
     #
-     if tagEnvironment[0] != nil
-	   return tagEnvironment[0].value 
+     if tag_environment[0] != nil
+	   return tag_environment[0].value 
      else
 	   return "Empty_Tag"
      end
 end # return_Environment
 # Returns a real aws name tag or reports an Empty Tag.
-def return_Name (tagName)
-    if tagName[0] != nil
-        return tagName[0].value 
+def return_name (tag_name)
+    if tag_name[0] != nil
+        return tag_name[0].value 
      else
        return "Empty_Tag"
     end
 end # return_Name
 # Writes Header to Rundeck resources.xml file
-def printRundeckHeader (aFile)
-   aFile.puts %q[<?xml version="1.0" encoding="UTF-8"?>]
-   aFile.puts "\n"
-   aFile.puts %q[<project>]
+def print_rundeck_header (a_file)
+   a_file.puts %q[<?xml version="1.0" encoding="UTF-8"?>]
+   a_file.puts "\n"
+   a_file.puts %q[<project>]
 end
 # Writes Footer to Rundeck resources.xml file
-def printRundeckFooter (aFile)
-  aFile.puts %q[</project>]
-  aFile.close
+def print_rundeck_footer (a_file)
+  a_file.puts %q[</project>]
+  a_file.close
 end
 # Verify basic env are set.
-def verifyEnv (zone)
+def verify_env (zone)
     if zone == nil
         puts "-- Please set AWS availability zone."
         puts %q[-- USEAGE: export ZONE="us-west-2"; ./buildrundeckResources.rb ]
@@ -58,48 +58,48 @@ def verifyEnv (zone)
     end
 end
 # Writes host line formatted for Rundeck Consumption
-def printRundeckHosts(ec2,aFile,awsStacks,totalProcessed,totalWritten)
+def print_rundeck_hosts(ec2,a_file,aws_stacks,total_processed,total_written)
    environment = ""
    name = ""
     ec2.instances.each do |i|
-     totalProcessed = totalProcessed + 1
-     name = return_Name(i.tags.select{|tag| tag.key == 'Name'})
-     environment = return_Environment(i.tags.select{|tag| tag.key == "ENVIRONMENT"})
-     if awsStacks == "NONPROD"
+     total_processed = total_processed + 1
+     name = return_name(i.tags.select{|tag| tag.key == 'Name'})
+     environment = return_environment(i.tags.select{|tag| tag.key == "ENVIRONMENT"})
+     if aws_stacks == "NONPROD"
         if environment.upcase  == "DEV" || environment.upcase  == "STAGING" || environment.upcase == "Empty_Tag"
-	     aFile.puts %Q[<node name="#{name}" description="Rundeck server node" tags="#{environment}" hostname="#{i.private_ip_address}" osArch="#{i.architecture}" osFamily="unix" osName="Linux" osVersion="#{i.image_id}" username="ubuntu"/>]
-         totalWritten = totalWritten + 1
+	     a_file.puts %Q[<node name="#{name}" description="Rundeck server node" tags="#{environment}" hostname="#{i.private_ip_address}" osArch="#{i.architecture}" osFamily="unix" osName="Linux" osVersion="#{i.image_id}" username="ubuntu"/>]
+         total_written = total_written + 1
         end
      else
         if environment.upcase  == "PRODUCTION" 
-	     aFile.puts %Q[<node name="#{name}" description="Rundeck server node" tags="#{environment}" hostname="#{i.private_ip_address}" osArch="#{i.architecture}" osFamily="unix" osName="Linux" osVersion="#{i.image_id}" username="ubuntu"/>]
-         totalWritten = totalWritten + 1
+	     a_file.puts %Q[<node name="#{name}" description="Rundeck server node" tags="#{environment}" hostname="#{i.private_ip_address}" osArch="#{i.architecture}" osFamily="unix" osName="Linux" osVersion="#{i.image_id}" username="ubuntu"/>]
+         total_written = total_written + 1
         end
      end 
     end
-    return totalProcessed, totalWritten
+    return total_processed, total_written
 end
 # Prints out the number of instances found and number of instances written to resources.xml
-def putStats(totalProcessed, totalWritten)
+def put_stats(total_processed, total_written)
   puts "-- Stats"
-  puts "-- Total Instances Processed #{totalProcessed}"
-  puts "-- Total Written to resources.xml #{totalWritten}"
+  puts "-- Total Instances Processed #{total_processed}"
+  puts "-- Total Written to resources.xml #{total_written}"
   puts "-- Processing Complete"  
 end
 
 # = Main
 #
-verifyEnv(awsZone)
-aFile = File.new("#{rundeckResourceFile}", "w")
-ec2 = Aws::EC2::Resource.new(region: "#{awsZone}")
-if aFile
+verify_env(aws_zone)
+a_file = File.new("#{rundeck_resource_file}", "w")
+ec2 = Aws::EC2::Resource.new(region: "#{aws_zone}")
+if a_file
   puts "-- Running Mode"
-  puts "-- Processing #{awsStacks} hosts in #{awsZone} availability zone"
-  printRundeckHeader(aFile)
-  totalProcessed, totalWritten = printRundeckHosts(ec2,aFile, awsStacks, totalProcessed, totalWritten) 
-  printRundeckFooter(aFile)
+  puts "-- Processing #{aws_stacks} hosts in #{aws_zone} availability zone"
+  print_rundeck_header(a_file)
+  total_processed, total_written = print_rundeck_hosts(ec2,a_file, aws_stacks, total_processed, total_written) 
+  print_rundeck_footer(a_file)
 else
    puts "Unable to open file!"
 end
-putStats(totalProcessed, totalWritten)
+putStats(total_processed, total_written)
 # = end
