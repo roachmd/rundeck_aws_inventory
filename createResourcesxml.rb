@@ -66,12 +66,12 @@ def printRundeckHosts(ec2,aFile,awsStacks,totalProcessed,totalWritten)
      name = return_Name(i.tags.select{|tag| tag.key == 'Name'})
      environment = return_Environment(i.tags.select{|tag| tag.key == "ENVIRONMENT"})
      if awsStacks == "NONPROD"
-        if environment  == "DEV" || environment  == "STAGING" || environment == "Empty_Tag"
+        if environment.upcase  == "DEV" || environment.upcase  == "STAGING" || environment.upcase == "Empty_Tag"
 	     aFile.puts %Q[<node name="#{name}" description="Rundeck server node" tags="#{environment}" hostname="#{i.private_ip_address}" osArch="#{i.architecture}" osFamily="unix" osName="Linux" osVersion="#{i.image_id}" username="ubuntu"/>]
          totalWritten = totalWritten + 1
         end
      else
-        if environment  == "PRODUCTION" 
+        if environment.upcase  == "PRODUCTION" 
 	     aFile.puts %Q[<node name="#{name}" description="Rundeck server node" tags="#{environment}" hostname="#{i.private_ip_address}" osArch="#{i.architecture}" osFamily="unix" osName="Linux" osVersion="#{i.image_id}" username="ubuntu"/>]
          totalWritten = totalWritten + 1
         end
