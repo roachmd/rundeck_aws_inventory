@@ -11,7 +11,7 @@ require 'aws-sdk'
 #
 # = Environment Vars
 # 
-aws_zone = ENV['ZONE'] || "us-east-2"
+aws_zone = ENV['ZONE'] || "us-west-2"
 aws_stacks = ENV['STACK'] || "NONPROD"
 rundeck_resource_file = ENV['RUNDECKFILE'] || "../resources/resources.xml"
 
