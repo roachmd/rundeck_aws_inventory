@@ -101,5 +101,5 @@ if a_file
 else
    puts "Unable to open file!"
 end
-putStats(total_processed, total_written)
+put_stats(total_processed, total_written)
 # = end
