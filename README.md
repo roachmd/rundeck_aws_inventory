@@ -1,9 +1,9 @@
 ## rundeck aws resources.xml builder
 
 ### Environment
-ZONE          AWS Zone In Use
-STACK         { PROD or NONPROD } NONPROD is everything not prod.
-RUNDECKFILE   Directory and name to put the resources.xml file
+- ZONE          AWS Zone In Use
+- STACK         { PROD or NONPROD } NONPROD is everything not prod.
+- RUNDECKFILE   Directory and name to put the resources.xml file
 
 ### Useage
 export ZONE="us-west-2" STACK="NONPROD" RUNDECKFILE="resources.xml"; ./createResourcesxml.rb
